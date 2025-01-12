@@ -37,6 +37,10 @@ nav_external_links:
     url: https://acm.illinois.edu/calendar
   - title: Access Request Form
     url: https://forms.gle/3WqWP94u4sDtrAmx8
+  - title: Public Infra Guides
+    url: https://drive.google.com/drive/folders/1RfcVLbQ-T6HNiH98A8NuD-DWuk4jUK4h
+  - title: Infra Team Documentation (auth required)
+    url: https://drive.google.com/drive/folders/1n9yIDXcfQhXtkEN5qZTjIypibRkXYPdA
 
 # Collections for website data
 collections:
