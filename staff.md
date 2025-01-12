@@ -3,24 +3,33 @@ layout: page
 title: Our Team
 description: A listing of all our leadership members.
 ---
+<link rel="stylesheet" href="/assets/css/staffer.css">
 
-# Leadership
+# Committee Chairs
 
-Leadership information is stored in the `_staffers` directory and rendered according to the layout file, `_layouts/staffer.html`.
-
-## Chairs
-
-{% assign chairs = site.staffers | where: 'role', 'Chair' %}
-{% for staffer in chairs %}
-{{ staffer }}
-{% endfor %}
+<div class="team-section chairs">
+  {% assign chairs = site.staffers | where: 'role', 'Chair' %}
+  {% for staffer in chairs %}
+  <div class="staffer">
+    {{ staffer }}
+  </div>
+  {% endfor %}
+</div>
 
 {% assign leads = site.staffers | where: 'role', 'Lead' %}
 {% assign num_leads = leads | size %}
 {% if num_leads != 0 %}
-## Leads
 
-{% for staffer in leads %}
-{{ staffer }}
-{% endfor %}
+# Team Leads
+
+<div class="team-section leads">
+  {% for staffer in leads %}
+  <div class="staffer">
+    {{ staffer }}
+  </div>
+  {% endfor %}
+</div>
 {% endif %}
+
+# Team Members
+We have many members who work to make Infra committee great - join the [ACM Discord](https://go.acm.illinois.edu/discord) to meet everyone!

@@ -1,0 +1,16 @@
+.team-section {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr); /* Default: 1 item per row */
+  gap: 20px; /* Space between items */
+  margin-bottom: 40px; /* Space between sections */
+  width: 40vw; /* Ensure the grid spans the full viewport width */
+  margin: 0; /* Remove any default margins */
+  padding: 0; /* Remove padding */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+@media (min-width: 600px) {
+  .team-section {
+    grid-template-columns: repeat(2, 1fr); /* 2 items per row */
+  }
+}
