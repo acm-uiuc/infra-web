@@ -31,5 +31,22 @@ description: A listing of all our leadership members.
 </div>
 {% endif %}
 
+{% assign members = site.staffers | where: 'role', 'Member' %}
+{% assign num_members = members | size %}
+{% if num_members != 0 %}
+
+
 # Team Members
+
+<div class="team-section members">
+  {% for staffer in members %}
+  <div class="staffer">
+    {{ staffer }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+
+
 We have many members who work to make Infra committee great - join the [ACM Discord](https://go.acm.illinois.edu/discord) to meet everyone!
