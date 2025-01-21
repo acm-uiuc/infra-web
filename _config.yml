@@ -23,7 +23,7 @@ exclude: ["Gemfile", "Gemfile.lock", "LICENSE"]
 # logo: "/assets/images/acm-wordmark-light.png"
 
 # Theme settings
-remote_theme: acm-uiuc/sig-website-jekyll-theme@v0.13.0
+remote_theme: acm-uiuc/sig-website-jekyll-theme@v0.13.1
 color_scheme: light
 search_enabled: true
 heading_anchors: true
