@@ -22,7 +22,7 @@ The Infra Committee is responsible for managing ACM @ UIUC's core software engin
 We take pride in delivering high-quality, enterprise-level solutions that empower our members and enhance their experience while enabling SIG and committee chairs to do their work effectively.
 
 # Learn More
-Feel free to look around the [ACM GitHub](https://github.com/acm-uiuc), or reach out to our chairs at [infra@acm.illinois.edu](mailto:infra@acm.illinois.edu) or via the [ACM Discord](https://go.acm.illinois.edu)!
+Feel free to look around the [ACM GitHub](https://github.com/acm-uiuc), or reach out to our chairs at [infra@acm.illinois.edu](mailto:infra@acm.illinois.edu) or via the [Infra Committee Discord](https://discord.gg/J8Zzrdzwcu)!
 
 # Get Involved
-Getting involved in Infra is a great way to learn more about professional software engineering. Join the [ACM Discord](https://go.acm.illinois.edu) and ask us how you can get involved!
+Getting involved in Infra is a great way to learn more about professional software engineering. Join the [Infra Committee Discord](https://discord.gg/J8Zzrdzwcu) and ask us how you can get involved!
