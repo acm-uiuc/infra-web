@@ -12,12 +12,19 @@ seo:
 
 The Infra Committee is responsible for managing ACM @ UIUC's core software engineering and infrastructure efforts, both on-premises and in the cloud. We specialize in developing enterprise-level products that are robust, scalable, and user-friendly, designed to meet the needs of a diverse and growing community of 1000+ CS students at UIUC.
 
-## Projects 
+## Main Projects 
 
-- **[ACM Core](https://github.com/acm-uiuc/core):** A comprehensive platform for event management, ticketing, Identity and Access Management (IAM), membership servicing, and more.  
+- **[ACM Core](https://github.com/acm-uiuc/core):** A comprehensive platform for:
+  - Event management
+  - Ticketing
+  - Identity and Access Management (IAM)
+  - Membership servicing
+  - Room reservations
+  - SIG/Committee information
+  - Link shortening (via [acm.gg](https://acm.gg/))
+  - ...and more!
 - **[Resume Book](https://resumes.acm.illinois.edu):** Bridging the gap between UIUC CS/ECE students and corporate recruiters.
-- **[Link Shortener](https://go.acm.illinois.edu):** Reducing link rot, maintaining a consistent brand image, and enabling easy management of shortened links within ACM.
-- ...and many more!
+- Other miscellaneous projects
 
 We take pride in delivering high-quality, enterprise-level solutions that empower our members and enhance their experience while enabling SIG and committee chairs to do their work effectively.
 
