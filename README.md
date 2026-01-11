@@ -24,6 +24,7 @@ The Infra Committee is responsible for managing ACM @ UIUC's core software engin
   - Link shortening (via [acm.gg](https://acm.gg/))
   - ...and more!
 - **[Resume Book](https://resumes.acm.illinois.edu):** Bridging the gap between UIUC CS/ECE students and corporate recruiters.
+- **[Website](https://github.com/acm-uiuc/website):** Provides information about ACM, its SIGs and committees, and allows students to purchase merch.
 - Other miscellaneous projects
 
 We take pride in delivering high-quality, enterprise-level solutions that empower our members and enhance their experience while enabling SIG and committee chairs to do their work effectively.
