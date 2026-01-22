@@ -1,0 +1,341 @@
+---
+layout: page
+title: Microsoft Token Test
+description: Test page for acquiring Microsoft access tokens
+---
+
+<style>
+  .token-section {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+  }
+
+  .token-section h3 {
+    margin-top: 0;
+    color: #333;
+  }
+
+  .token-button {
+    padding: 10px 20px;
+    margin: 5px;
+    background-color: #0078d4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  .token-button:hover {
+    background-color: #106ebe;
+  }
+
+  .token-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  .token-display {
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+    word-break: break-all;
+    white-space: pre-wrap;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .error {
+    color: #d13438;
+    margin-top: 10px;
+  }
+
+  .success {
+    color: #107c10;
+    margin-top: 10px;
+  }
+
+  .info {
+    color: #0078d4;
+    margin-top: 10px;
+  }
+
+  .service-select {
+    width: 100%;
+    max-width: 500px;
+    padding: 8px;
+    margin: 10px 0;
+    font-size: 14px;
+  }
+
+  .config-group {
+    margin: 10px 0;
+  }
+</style>
+
+<script src="https://alcdn.msauth.net/browser/2.38.1/js/msal-browser.min.js"></script>
+
+<div class="token-section">
+  <h3>Microsoft Token Tester</h3>
+  <p>Select a service and get an access token. The page will attempt silent authentication first, then redirect if
+    needed.</p>
+
+  <div class="config-group">
+    <label for="serviceSelect"><strong>Select Service:</strong></label><br>
+    <select id="serviceSelect" class="service-select">
+      <option value="uiuc-netid">UIUC NetID Authentication</option>
+    </select>
+  </div>
+
+  <div id="selectedServiceInfo" class="info"></div>
+
+  <br>
+
+  <button id="getTokenBtn" class="token-button">Get Token</button>
+  <button id="signOutBtn" class="token-button">Sign Out</button>
+
+  <div id="status" class="info"></div>
+  <div id="accountInfo" class="info"></div>
+
+  <div id="tokenDisplay" class="token-display" style="display: none;"></div>
+</div>
+
+<div class="token-section">
+  <h3>Instructions</h3>
+  <ol>
+    <li>Select a service from the dropdown</li>
+    <li>Click "Get Token" to acquire an access token</li>
+    <li>The page will first try silent authentication, then redirect if interaction is required</li>
+    <li>The decoded access token will be displayed below once acquired</li>
+    <li>Use "Sign Out" to clear the session</li>
+  </ol>
+
+  <p><strong>Note:</strong> Each client ID must be configured with the following redirect URI in Azure AD:</p>
+  <code id="redirectUri"></code>
+
+  <h4>Configuring Service Presets</h4>
+  <p>To configure the tenant and client IDs for the pre-configured services, edit the <code>serviceConfigs</code> object
+    in the page source.</p>
+</div>
+
+<script>
+  console.log('Script starting...');
+
+  let msalInstance = null;
+  let msalInitialized = false;
+  let currentConfig = null;
+
+  const serviceConfigs = {
+    'uiuc-netid': {
+      tenantId: '44467e6f-462c-4ea2-823f-7800de5434e3',
+      clientId: 'd64e9c50-d144-4b4a-a315-ad2ed456c37c'
+    }
+  };
+
+  const DEFAULT_SCOPES = ['openid', 'profile', 'User.Read'];
+
+  function showStatus(message, type) {
+    var statusDiv = document.getElementById('status');
+    if (statusDiv) {
+      statusDiv.textContent = message;
+      statusDiv.className = type;
+    }
+    console.log('[' + type + '] ' + message);
+  }
+
+  function displayToken(token) {
+    var tokenDisplay = document.getElementById('tokenDisplay');
+    try {
+      var parts = token.split('.');
+      var header = JSON.parse(atob(parts[0]));
+      var payload = JSON.parse(atob(parts[1]));
+      var displayText = token;
+      tokenDisplay.textContent = displayText;
+      tokenDisplay.style.display = 'block';
+    } catch (e) {
+      tokenDisplay.textContent = 'Raw Token:\n' + token;
+      tokenDisplay.style.display = 'block';
+    }
+  }
+
+  function displayAccountInfo(account) {
+    var accountInfo = document.getElementById('accountInfo');
+    accountInfo.innerHTML = '<strong>Signed in as:</strong> ' + account.username + ' (' + account.name + ')';
+  }
+
+  function initializeMsal() {
+    console.log('initializeMsal called');
+
+    if (!currentConfig) {
+      showStatus('Please select a service', 'error');
+      return Promise.resolve(null);
+    }
+
+    if (msalInstance && msalInitialized) {
+      console.log('Returning existing instance');
+      return Promise.resolve(msalInstance);
+    }
+
+    var msalConfig = {
+      auth: {
+        clientId: currentConfig.clientId,
+        authority: 'https://login.microsoftonline.com/' + currentConfig.tenantId,
+        redirectUri: window.location.origin + window.location.pathname
+      },
+      cache: {
+        cacheLocation: 'sessionStorage',
+        storeAuthStateInCookie: false
+      }
+    };
+
+    console.log('Creating MSAL with clientId:', currentConfig.clientId);
+
+    try {
+      msalInstance = new msal.PublicClientApplication(msalConfig);
+      return msalInstance.initialize().then(function() {
+        msalInitialized = true;
+        console.log('MSAL initialized');
+        return msalInstance;
+      });
+    } catch (e) {
+      showStatus('Error initializing MSAL: ' + e.message, 'error');
+      console.error(e);
+      return Promise.resolve(null);
+    }
+  }
+
+  function handleServiceChange() {
+    console.log('handleServiceChange called');
+
+    var serviceSelect = document.getElementById('serviceSelect');
+    var selectedService = serviceSelect.value;
+    var serviceInfo = document.getElementById('selectedServiceInfo');
+
+    sessionStorage.setItem('msalTestService', selectedService);
+
+    if (selectedService && serviceConfigs[selectedService]) {
+      currentConfig = serviceConfigs[selectedService];
+      var serviceName = serviceSelect.options[serviceSelect.selectedIndex].text;
+
+      serviceInfo.innerHTML = '<strong>Service:</strong> ' + serviceName + '<br>' +
+        '<strong>Tenant ID:</strong> ' + currentConfig.tenantId + '<br>' +
+        '<strong>Client ID:</strong> ' + currentConfig.clientId;
+      serviceInfo.className = 'info';
+
+      msalInstance = null;
+      msalInitialized = false;
+      return initializeMsal();
+    }
+    return Promise.resolve(null);
+  }
+
+  function getToken() {
+    console.log('getToken clicked');
+
+    initializeMsal().then(function(msalApp) {
+      if (!msalApp) {
+        console.error('No MSAL app');
+        return;
+      }
+
+      var accounts = msalApp.getAllAccounts();
+      console.log('Accounts:', accounts.length);
+
+      var request = {
+        scopes: DEFAULT_SCOPES,
+        account: accounts.length > 0 ? accounts[0] : null
+      };
+
+      if (accounts.length > 0) {
+        showStatus('Trying silent auth...', 'info');
+        msalApp.acquireTokenSilent(request).then(function(response) {
+          showStatus('Token acquired!', 'success');
+          displayAccountInfo(response.account);
+          displayToken(response.accessToken);
+        }).catch(function(err) {
+          console.log('Silent failed, redirecting...', err);
+          showStatus('Redirecting...', 'info');
+          msalApp.loginRedirect(request);
+        });
+      } else {
+        showStatus('Redirecting for login...', 'info');
+        msalApp.loginRedirect(request);
+      }
+    }).catch(function(err) {
+      showStatus('Error: ' + err.message, 'error');
+      console.error(err);
+    });
+  }
+
+  function signOut() {
+    console.log('signOut clicked');
+
+    initializeMsal().then(function(msalApp) {
+      if (!msalApp) {
+        showStatus('No session', 'error');
+        return;
+      }
+
+      var accounts = msalApp.getAllAccounts();
+      if (accounts.length === 0) {
+        showStatus('No accounts', 'error');
+        return;
+      }
+
+      msalApp.logoutRedirect({ account: accounts[0] });
+    });
+  }
+
+  function init() {
+    console.log('init called');
+    console.log('MSAL exists:', typeof msal !== 'undefined');
+
+    if (typeof msal === 'undefined') {
+      showStatus('MSAL library not loaded', 'error');
+      return;
+    }
+
+    var redirectUriEl = document.getElementById('redirectUri');
+    if (redirectUriEl) {
+      redirectUriEl.textContent = window.location.origin + window.location.pathname;
+    }
+
+    document.getElementById('getTokenBtn').onclick = getToken;
+    document.getElementById('signOutBtn').onclick = signOut;
+    document.getElementById('serviceSelect').onchange = handleServiceChange;
+
+    var savedService = sessionStorage.getItem('msalTestService');
+    if (savedService) {
+      document.getElementById('serviceSelect').value = savedService;
+    }
+
+    handleServiceChange().then(function() {
+      if (msalInstance && msalInitialized) {
+        console.log('Checking redirect...');
+        msalInstance.handleRedirectPromise().then(function(response) {
+          if (response) {
+            showStatus('Auth successful!', 'success');
+            displayAccountInfo(response.account);
+            displayToken(response.accessToken);
+          }
+        }).catch(function(err) {
+          showStatus('Redirect error: ' + err.message, 'error');
+          console.error(err);
+        });
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+</script>
