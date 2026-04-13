@@ -1,5 +1,5 @@
 ---
 name: Ashley Li
-role: Member
+role: Chair
 email: ashleyl7@illinois.edu
 ---
