@@ -1,6 +1,6 @@
 ---
 name: John Doe
-role: [Lead/Member/Chair]
+role: Lead/Member/Chair
 meta: [['A fun fact!']]
 pronouns: they/them
 email: some_email@illinois.edu
